@@ -1,0 +1,46 @@
+# Ignore all data folders (anywhere in the project)
+**/data/
+
+# Ignore generated model artifacts but keep models/README.md tracked
+models/*
+!models/README.md
+*.joblib
+*.pkl
+*.pickle
+
+# Ignore generated metric/report CSVs
+**/reports/*.csv
+**/reports/
+**/reports/**/*.csv
+
+# Also common Python ignores
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# Virtual environments
+venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
