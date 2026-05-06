@@ -1,0 +1,286 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Phishing Email Detector</title>
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="brand" href="#analyze" aria-label="Phishing detector home">
+        <span class="brand-mark" aria-hidden="true">PD</span>
+        <span>
+          <strong>Phishing Detector</strong>
+          <small>Real local model inference</small>
+        </span>
+      </a>
+      <nav class="top-nav" aria-label="Main navigation">
+        <a href="#analyze">Analyze</a>
+        <a href="#how-it-works">How it works</a>
+        <a href="#metrics">Metrics</a>
+        <a href="#workflow">Workflow</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="analyzer-section" id="analyze" aria-labelledby="analyzer-title">
+        <div class="section-inner analyzer-layout">
+          <section class="input-panel" aria-labelledby="analyzer-title">
+            <p class="eyebrow">Saved model pipeline</p>
+            <h1 id="analyzer-title">Check an email for phishing risk</h1>
+            <p class="lead">
+              Paste the subject and body. The website extracts structural signals, converts the text with the saved Word2Vec model, and combines both classifiers using the fusion settings in the models folder.
+            </p>
+
+            <div class="model-status" id="modelStatus" data-status="loading" aria-live="polite">
+              <span class="status-dot" aria-hidden="true"></span>
+              <div>
+                <strong id="modelStatusText">Loading saved models...</strong>
+                <small id="settingsLine">Reading artifacts from the local models directory.</small>
+              </div>
+            </div>
+
+            <form class="email-form" id="emailForm">
+              <label for="emailSubject">Email subject</label>
+              <input id="emailSubject" name="subject" type="text" autocomplete="off" placeholder="Paste the subject line">
+
+              <label for="emailBody">Email body</label>
+              <textarea id="emailBody" name="body" rows="12" placeholder="Paste the full email body"></textarea>
+
+              <div class="form-actions">
+                <button class="primary-button" id="analyzeButton" type="submit">Analyze email</button>
+                <button class="secondary-button" type="button" data-sample="phishing">Phishing sample</button>
+                <button class="secondary-button" type="button" data-sample="legitimate">Legitimate sample</button>
+                <button class="ghost-button" id="clearButton" type="button">Clear</button>
+              </div>
+            </form>
+          </section>
+
+          <aside class="result-panel" aria-label="Detection result">
+            <div class="decision-block" id="decisionBlock" aria-live="polite">
+              <span id="decisionLabel">Ready</span>
+              <strong id="fusionScore">--</strong>
+              <p id="decisionText">Paste an email or load a sample to run the saved models.</p>
+            </div>
+
+            <div class="score-list" aria-label="Model scores">
+              <div class="score-row">
+                <span>Structural model</span>
+                <strong id="scoreAValue">--</strong>
+                <div class="meter"><span id="scoreABar"></span></div>
+              </div>
+              <div class="score-row">
+                <span>Text model</span>
+                <strong id="scoreBValue">--</strong>
+                <div class="meter text-meter"><span id="scoreBBar"></span></div>
+              </div>
+              <div class="score-row">
+                <span>Fusion score</span>
+                <strong id="scoreFusionValue">--</strong>
+                <div class="meter fusion-meter"><span id="scoreFusionBar"></span></div>
+              </div>
+            </div>
+
+            <dl class="result-meta">
+              <div>
+                <dt>Threshold</dt>
+                <dd id="thresholdValue">--</dd>
+              </div>
+              <div>
+                <dt>Text tokens</dt>
+                <dd id="tokenCount">--</dd>
+              </div>
+            </dl>
+
+            <section class="reason-panel" aria-labelledby="reasons-title">
+              <h2 id="reasons-title">Why this result?</h2>
+              <ul id="reasonList">
+                <li>The result will appear here after the models analyze the message.</li>
+              </ul>
+            </section>
+
+            <section class="feature-panel" aria-labelledby="features-title">
+              <h2 id="features-title">Extracted signals</h2>
+              <dl class="feature-grid">
+                <div><dt>Links</dt><dd id="urlCount">--</dd></div>
+                <div><dt>Email addresses</dt><dd id="emailCount">--</dd></div>
+                <div><dt>IP addresses</dt><dd id="ipCount">--</dd></div>
+                <div><dt>HTML tags</dt><dd id="htmlCount">--</dd></div>
+                <div><dt>Punctuation</dt><dd id="punctuationCount">--</dd></div>
+                <div><dt>Uppercase ratio</dt><dd id="uppercaseRatio">--</dd></div>
+                <div><dt>Risk words</dt><dd id="suspiciousCount">--</dd></div>
+                <div><dt>Subdomains</dt><dd id="subdomainCount">--</dd></div>
+              </dl>
+            </section>
+          </aside>
+        </div>
+      </section>
+
+      <section class="process-section" id="how-it-works" aria-labelledby="process-title">
+        <div class="section-inner process-layout">
+          <div>
+            <p class="eyebrow">How it works</p>
+            <h2 id="process-title">Two models, one clear decision</h2>
+            <p>
+              The app uses the artifacts in <code>models/</code>. Model A reads handcrafted structure features. Model B reads a 150-dimensional average Word2Vec representation of the cleaned email text. The final score is the saved weighted fusion of both phishing probabilities.
+            </p>
+          </div>
+          <figure class="pipeline-figure">
+            <img src="assets/pipeline-preview.png" alt="Preview of the phishing detection project interface">
+          </figure>
+        </div>
+
+        <div class="section-inner step-grid" aria-label="Model pipeline steps">
+          <article>
+            <span>01</span>
+            <h3>Read the email</h3>
+            <p>Subject and body are combined into the same raw text used by the notebooks.</p>
+          </article>
+          <article>
+            <span>02</span>
+            <h3>Extract structure</h3>
+            <p>The server counts URLs, email addresses, IPs, HTML tags, punctuation, uppercase ratio, risk words, replies, and subdomains.</p>
+          </article>
+          <article>
+            <span>03</span>
+            <h3>Vectorize language</h3>
+            <p>The text is cleaned, stop words are removed, and known tokens are averaged from <code>word2vec_150d.joblib</code>.</p>
+          </article>
+          <article>
+            <span>04</span>
+            <h3>Fuse the scores</h3>
+            <p><code>fusion_weights.json</code> controls the structural weight, text weight, and decision threshold used by the website.</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="metrics-section" id="metrics" aria-labelledby="metrics-title">
+        <div class="section-inner">
+          <div class="section-heading">
+            <p class="eyebrow">Evaluation</p>
+            <h2 id="metrics-title">Project metrics from the reports</h2>
+            <p>
+              These values summarize the current report files. The live website uses the model artifacts and fusion JSON currently saved in <code>models/</code>.
+            </p>
+          </div>
+
+          <div class="metric-grid" aria-label="Key metrics">
+            <article>
+              <span>Model A test F1</span>
+              <strong>0.822</strong>
+              <small>Structural Random Forest</small>
+            </article>
+            <article>
+              <span>Model B validation F1</span>
+              <strong>0.941</strong>
+              <small>Word2Vec text classifier</small>
+            </article>
+            <article>
+              <span>Fusion test F1</span>
+              <strong>0.857</strong>
+              <small>Validation-selected test run</small>
+            </article>
+            <article>
+              <span>Fusion recall</span>
+              <strong>1.000</strong>
+              <small>Reported on the test split</small>
+            </article>
+          </div>
+
+          <div class="metrics-layout">
+            <article class="chart-panel" aria-labelledby="f1-title">
+              <h3 id="f1-title">F1 comparison</h3>
+              <div class="bar-chart" aria-label="F1 comparison chart">
+                <div class="bar-row">
+                  <span>Model A</span>
+                  <div><i style="width: 75.0%"></i></div>
+                  <strong>0.822</strong>
+                </div>
+                <div class="bar-row">
+                  <span>Model B</span>
+                  <div><i style="width: 94.1%"></i></div>
+                  <strong>0.941</strong>
+                </div>
+                <div class="bar-row">
+                  <span>Fusion</span>
+                  <div><i style="width: 85.7%"></i></div>
+                  <strong>0.857</strong>
+                </div>
+              </div>
+            </article>
+
+            <article class="chart-panel" aria-labelledby="matrix-title">
+              <h3 id="matrix-title">Model A confusion matrix</h3>
+              <div class="confusion-matrix" aria-label="Model A confusion matrix">
+                <span></span>
+                <b>Predicted legitimate</b>
+                <b>Predicted phishing</b>
+                <b>Actual legitimate</b>
+                <strong>3,985</strong>
+                <strong>7,839</strong>
+                <b>Actual phishing</b>
+                <strong>423</strong>
+                <strong>12,424</strong>
+              </div>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="workflow-section" id="workflow" aria-labelledby="workflow-title">
+        <div class="section-inner">
+          <div class="section-heading">
+            <p class="eyebrow">Project workflow</p>
+            <h2 id="workflow-title">Notebook map</h2>
+            <p>
+              The website mirrors the local project pipeline, from data preparation through model fusion and presentation.
+            </p>
+          </div>
+
+          <div class="workflow-grid">
+            <article>
+              <span>01</span>
+              <h3>Preprocess data</h3>
+              <p><code>data_preprocessing.ipynb</code> standardizes the raw email datasets and creates cleaned text.</p>
+            </article>
+            <article>
+              <span>02</span>
+              <h3>Build structure features</h3>
+              <p><code>model_a/feature_extraction.ipynb</code> creates the 12 numeric features used by Model A.</p>
+            </article>
+            <article>
+              <span>03</span>
+              <h3>Train Model A</h3>
+              <p><code>model_a/fit_and_validate.ipynb</code> trains and saves the structural classifier.</p>
+            </article>
+            <article>
+              <span>04</span>
+              <h3>Vectorize text</h3>
+              <p><code>model_b/data_vectorization.ipynb</code> trains or loads the Word2Vec text representation.</p>
+            </article>
+            <article>
+              <span>05</span>
+              <h3>Train Model B</h3>
+              <p><code>model_b/fit_and_validate.ipynb</code> trains the classifier on 150-dimensional document vectors.</p>
+            </article>
+            <article>
+              <span>06</span>
+              <h3>Run the website</h3>
+              <p><code>website/server.py</code> loads the saved artifacts and exposes the local analysis API.</p>
+            </article>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="section-inner footer-inner">
+        <span>Phishing Detector</span>
+        <span>Local model-backed website</span>
+      </div>
+    </footer>
+
+    <script src="app.js"></script>
+  </body>
+</html>

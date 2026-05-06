@@ -102,3 +102,68 @@ A two‑model pipeline that detects phishing emails using **structural** (hand�
 - Swap Word2Vec for a lightweight sentence transformer (e.g., `all-MiniLM-L6-v2`) for richer embeddings.
 - Experiment with different classifiers or gradient‑boosting models.
 - Tune the fusion threshold or use a meta‑learner instead of fixed weights.
+
+# Email Phishing Detection
+
+This project contains a two-expert phishing detector and a local website for testing one email at a time.
+
+- `model_a/` trains the structural expert on 12 handcrafted email features.
+- `model_b/` trains the text expert on 150-dimensional average Word2Vec document vectors.
+- `models/` stores the live artifacts used by the website: `best_model_a.joblib`, `best_model_b.joblib`, `word2vec_150d.joblib`, and `fusion_weights.json`.
+- Fusion combines both phishing probabilities: `w_a * p_a + w_b * p_b`, then compares the result with the saved threshold.
+
+## Run the Website
+
+From the project root:
+
+```powershell
+.\.venv\Scripts\python.exe website\server.py
+```
+
+Then open:
+
+```text
+http://127.0.0.1:8000
+```
+
+The website is model-backed. It will not produce real predictions if `index.html` is opened directly as a file, because the browser must call the local `/api/analyze` endpoint.
+
+## Model A Features
+
+Model A expects these 12 numeric features in order:
+
+1. `num_urls`
+2. `num_emails`
+3. `num_ips`
+4. `num_html_tags`
+5. `num_exclamations`
+6. `num_questions`
+7. `uppercase_ratio`
+8. `total_words`
+9. `avg_word_length`
+10. `suspicious_word_count`
+11. `num_replies_forwards`
+12. `num_subdomains`
+
+## Model B Text Flow
+
+Model B uses the same text preparation as the notebooks:
+
+1. Combine subject and body.
+2. Decode HTML entities and remove HTML tags.
+3. Lowercase and keep alphanumeric tokens.
+4. Remove English stop words.
+5. Split into tokens.
+6. Average known token vectors from `word2vec_150d.joblib`.
+7. Send the resulting 150-dimensional vector to `best_model_b.joblib`.
+
+## Reports
+
+Current report highlights:
+
+- Model A test F1: `0.822`
+- Model B validation F1: `0.941`
+- Fusion test F1: `0.857`
+- Fusion test recall: `1.000`
+
+The live website always uses the artifacts currently saved in `models/`.
