@@ -1,22 +1,25 @@
-# Phishing Email Detection – Dual‑Model System
+# Phishing Email Detection
 
 A two‑model pipeline that detects phishing emails using **structural** (hand‑crafted) and **linguistic** (Word2Vec) features, then fuses their predictions into a single, stronger output.
+
+`Remark` before you start the project you should download the data from https://www.kaggle.com/datasets/naserabdullahalam/phishing-email-dataset after that put the 7 csv files in data/raw as presented in the following structure:
 
 ---
 
 ## Project Structure
 
 ```
-.
+project folder
 ├── data/
 │   ├── raw/                         # Original 7 heterogeneous CSVs
 │   ├── preprocessed/
 │   │   └── processed_data.csv       # Unified dataset (label, raw_text, cleaned_text, …)
 │   ├── model_a/
-│   │   ├── features.csv             # Structural feature matrix
-│   │   └── splits/                  # train / val / test splits for Model A
+│   │   ├── extracted_features
+|   |   |   ├──features.csv          # Structural feature matrix
+│   │   └── splits/                  # contains csv files for train / val / test splits for Model A
 │   └── model_b/
-│       └── vectorized_data/         # train / val / test splits for Model B
+│       └── vectorized_data/         # csv file of vectorized data for Model B
 │       └── splits/                  # train / val / test splits for Model B
 ├── models/
 │   ├── best_model_a.joblib          # Best structural classifier
