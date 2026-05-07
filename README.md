@@ -84,7 +84,7 @@ project folder
    pip install -r requirements.txt
    ```
    `Note` before runing the command ensure you are in the root folder of the project
-   
+
 3. Run the notebooks in order:
    - `01_data_preprocessing.ipynb`
    - `02_model_b_embedding.ipynb`
@@ -123,10 +123,10 @@ This project contains a two-expert phishing detector and a local website for tes
 
 ## Run the Website
 
-From the project root:
+From the website folder:
 
 ```powershell
-.\.venv\Scripts\python.exe website\server.py
+python server.py
 ```
 
 Then open:
