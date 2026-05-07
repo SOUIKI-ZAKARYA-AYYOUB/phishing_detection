@@ -79,6 +79,12 @@ project folder
    ```bash
    pip install pandas numpy scikit-learn gensim matplotlib seaborn joblib
    ```
+  If you want to use conda environment:
+   ```bash
+   pip install -r requirements.txt
+   ```
+   `Note` before runing the command ensure you are in the root folder of the project
+   
 3. Run the notebooks in order:
    - `01_data_preprocessing.ipynb`
    - `02_model_b_embedding.ipynb`
