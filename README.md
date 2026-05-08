@@ -10,6 +10,9 @@ A two-model pipeline that detects phishing emails by fusing **structural** (12 h
 
 Download the dataset from [Kaggle](https://www.kaggle.com/datasets/naserabdullahalam/phishing-email-dataset) and place all 7 CSV files in `data/raw/` before running any notebook.
 
+`Remark` If you want to download the pre-trained models to save time [click here](https://drive.google.com/drive/folders/1AdJhUR52Fu_OJIspRQuRf8qT5KInoRGi?usp=sharing)
+
+
 ---
 
 ## Project Structure
